@@ -1,7 +1,5 @@
 # Windows-PowerShell-Scripts.
 
-PowerShell Scripts for Office 365 Reporting.
-
 Tips for Managing and Scheduling Scripts:
 
 Scheduling: Use Task Scheduler to automate these scripts to run at specific intervals, like daily, weekly, or monthly.
