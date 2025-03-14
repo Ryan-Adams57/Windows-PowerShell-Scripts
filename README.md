@@ -1,4 +1,4 @@
-# Windows-PowerShell_Scripts.
+# Windows-PowerShell-Scripts.
 
 PowerShell Scripts for Office 365 Reporting.
 
