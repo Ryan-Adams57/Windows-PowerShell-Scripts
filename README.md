@@ -1,6 +1,6 @@
 # Windows-PowerShell_Scripts.
 
-A list of Windows PowerShell Scripts that I have created.
+PowerShell Scripts for Office 365 Reporting.
 
 Tips for Managing and Scheduling Scripts:
 
