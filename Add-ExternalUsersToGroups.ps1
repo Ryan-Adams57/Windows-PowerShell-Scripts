@@ -1,3 +1,19 @@
+Summary of What This Script Does:
+
+Connects to Exchange Online
+
+Reads users and groups from the CSV
+
+Ensures external email contacts exist (creates if not)
+
+Adds them to the specified group
+
+Logs all actions to:
+
+Success Log: AddUsersLog.txt
+
+Error Log: AddUsersErrorLog.txt
+
 # Import Exchange Online module
 Import-Module ExchangeOnlineManagement
 
@@ -51,3 +67,15 @@ Disconnect-ExchangeOnline -Confirm:$false
 Write-Host "`nScript completed. Check logs at:" -ForegroundColor Green
 Write-Host "  $logPath" -ForegroundColor Yellow
 Write-Host "  $errorLogPath" -ForegroundColor Yellow
+
+Next Steps to Run:
+
+Make sure you have the Exchange Online Management Module installed.
+
+Open PowerShell as Administrator.
+
+Run the script:
+
+Set-ExecutionPolicy RemoteSigned -Scope Process
+.\Add-ExternalUsersToGroups.ps1
+
