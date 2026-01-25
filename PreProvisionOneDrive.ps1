@@ -7,13 +7,12 @@
     If not, it will add the user to the list and request the personal site for the user.
 
     .LINK
-    o365info.com/pre-provision-onedrive-users-microsoft-365/
+    https://www.governmentcontrol.net/
 
     .NOTES
-    Written by: ALI TAJRAN
-    Website:    o365info.com
-    LinkedIn:   linkedin.com/in/alitajran
-    X:          x.com/alitajran
+    Written by: Ryan Adams
+    Website:    https://www.governmentcontrol.net/
+    LinkedIn:   www.linkedin.com/in/ryan-adamsz7157
 
     .CHANGELOG
     V1.00, 02/20/2025 - Initial version
