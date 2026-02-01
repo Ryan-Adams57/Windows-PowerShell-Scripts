@@ -6,14 +6,6 @@
     The script will pre-provision OneDrive for Microsoft 365 users. It will check if the user already has a personal site.
     If not, it will add the user to the list and request the personal site for the user.
 
-    .LINK
-    https://www.governmentcontrol.net/
-
-    .NOTES
-    Written by: Ryan Adams
-    Website:    https://www.governmentcontrol.net/
-    LinkedIn:   www.linkedin.com/in/ryan-adamsz7157
-
     .CHANGELOG
     V1.00, 02/20/2025 - Initial version
 #>
