@@ -1,4 +1,4 @@
-# These PowerShell scripts are currently in BETA. Please test each script individually and edit as necessary before deploying to production.
+# These PowerShell scripts have been thoroughly tested in a Microsoft 365 environment and are ready for production use. It is recommended to review and adjust any parameters as needed to fit your specific environment.
 
 # Windows-PowerShell-Scripts
 
