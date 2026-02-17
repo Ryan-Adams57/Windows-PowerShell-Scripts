@@ -4,8 +4,6 @@ Welcome to this comprehensive repository of PowerShell solutions designed for th
 
 This collection features a robust set of scripts engineered to streamline environment management, automate complex reporting, and facilitate deep auditing.
 
-These tools empower IT professionals to maintain a secure, compliant, and efficient tenant through high-performance automation.
-
 # Key Features
 
 Extensive Collection: A versatile library of PowerShell scripts covering a wide array of administrative domains.
@@ -26,13 +24,13 @@ Extensible Architecture: Well-structured code allowing for easy customization to
 
 # Usage Instructions
 
-Self-Contained Logic: Each script is designed to be independent, containing all necessary logic and error handling within the file.
+Each script is designed to be independent, containing all necessary logic and error handling within the file.
 
-Granular Control: Utilize built-in parameters and switches to filter results and target specific workloads (e.g., Exchange Online, SharePoint, Teams).
+Utilize built-in parameters and switches to filter results and target specific workloads (e.g., Exchange Online, SharePoint, Teams).
 
-Documentation: Detailed comments, syntax guides, and usage examples are included at the top of every script.
+Detailed comments, syntax guides, and usage examples are included at the top of every script.
 
-Execution: Ensure your execution policy is configured correctly and you have the necessary Microsoft Graph or module-specific permissions before running.
+Ensure your execution policy is configured correctly and you have the necessary Microsoft Graph or module-specific permissions before running.
 
 # Disclaimer
 
