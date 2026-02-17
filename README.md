@@ -6,21 +6,21 @@ This collection features a robust set of scripts engineered to streamline enviro
 
 # Key Features
 
-Extensive Collection: A versatile library of PowerShell scripts covering a wide array of administrative domains.
+A versatile library of PowerShell scripts covering a wide array of administrative domains.
 
-Workflow Automation: Eliminate manual overhead by automating routine tasks, reducing human error, and increasing operational consistency.
+Eliminate manual overhead by automating routine tasks, reducing human error, and increasing operational consistency.
 
-Advanced Reporting: Generate granular, data-driven reports tailored for internal audits and regulatory compliance requirements.
+Generate granular, data-driven reports tailored for internal audits and regulatory compliance requirements.
 
-Unified Management: Simplify the administration of users, groups, licenses, and security settings across the M365 stack.
+Simplify the administration of users, groups, licenses, and security settings across the M365 stack.
 
-Proactive Auditing: Monitor tenant activities to identify anomalous behavior, unauthorized access attempts, and configuration drift.
+Monitor tenant activities to identify anomalous behavior, unauthorized access attempts, and configuration drift.
 
-Data Export: All reporting scripts feature optimized CSV output for easy integration with Excel, Power BI, or other data analysis tools.
+All reporting scripts feature optimized CSV output for easy integration with Excel, Power BI, or other data analysis tools.
 
-Task Scheduling: Designed for headless execution; most scripts fully support Task Scheduler for periodic, hands-off reporting.
+Designed for headless execution; most scripts fully support Task Scheduler for periodic, hands-off reporting.
 
-Extensible Architecture: Well-structured code allowing for easy customization to meet specific organizational requirements.
+Well-structured code allowing for easy customization to meet specific organizational requirements.
 
 # Usage Instructions
 
