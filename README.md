@@ -1,5 +1,3 @@
-# Microsoft 365 Management, Reporting, and Auditing PowerShell Library
-
 # Introduction
 
 Welcome to this comprehensive repository of PowerShell solutions designed for the modern Microsoft 365 administrator.
