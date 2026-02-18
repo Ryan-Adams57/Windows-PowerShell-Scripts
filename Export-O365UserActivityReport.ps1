@@ -1,194 +1,272 @@
 <#
 =============================================================================================
-Name:           Export Office 365 users real last activity time report
-Version:        3.0
-Website:        https://www.governmentcontrol.net/
-Author:         Ryan Adams
-GitHub:         https://github.com/Ryan-Adams57
-Gitlab:         https://gitlab.com/Ryan-Adams57
-PasteBin:       https://pastebin.com/u/Removed_Content
+Name:           Export Office 365 User Activity Report to CSV using PowerShell 
+Version:        2.0
+website:        https://www.governmentcontrol.net/
 
-Script Highlights: 
+Script Highlights:
 ~~~~~~~~~~~~~~~~~
+1. The script uses modern authentication to connect to Exchange Online.  
+2. The script can be executed with MFA enabled account too.  
+3. Exports report results to CSV file.  
+4. Allows you to generate a user activity report for a custom period.  
+5. Automatically installs the EXO V2 module (if not installed already) upon your confirmation. 
+6. The script is scheduler friendly. I.e., Credential can be passed as a parameter instead of saving inside the script. 
 
-1. Reports user activity time based on LastUserActionTime. 
-2. Exports results to CSV. 
-3. Filters by inactive days. 
-4. Filters by user/mailbox type. 
-5. Optionally filters never logged in mailboxes. 
-6. Optionally filters licensed users. 
-7. Shows administrative roles for each user. 
-8. Assigned licenses shown with user-friendly names. 
-9. Supports MFA-enabled accounts. 
-10. Scheduler friendly: credentials can be passed as parameters. 
+Change Log:
+~~~~~~~~~~~
+  V1.0 (Jan 07, 2021)  - File created
+  V1.1 (Dec 17, 2021)  - Minor usabilities
+  V2.0 (May 14, 2025)  - Removed MS Online module dependency, added support for certificate-based authentication, and extended audit log retrieval from 90 to 180 days.
+
+For detailed Script execution: GitHub - https://github.com/Ryan-Adams57
 ============================================================================================
 #>
 
-Param (
+Param
+(
     [Parameter(Mandatory = $false)]
-    [string]$MBNamesFile,
-    [int]$InactiveDays,
-    [switch]$UserMailboxOnly,
-    [switch]$LicensedUserOnly,
-    [switch]$ReturnNeverLoggedInMBOnly,
-    [string]$UserName,
-    [string]$Password,
-    [switch]$FriendlyTime,
-    [switch]$NoMFA
+    [switch]$MFA,
+    [switch]$Default,
+    [Nullable[DateTime]]$StartDate,
+    [Nullable[DateTime]]$EndDate,
+    [string]$UserID,
+    [string]$Organization,
+    [string]$ClientId,
+    [string]$CertificateThumbprint,
+    [string]$AdminName,
+    [string]$Password
 )
 
-Function Get_LastLogonTime {
-    $MailboxStatistics = Get-MailboxStatistics -Identity $upn
-    $LastActionTime = $MailboxStatistics.LastUserActionTime
-    $LastActionTimeUpdatedOn = $MailboxStatistics.LastUserActionUpdateTime
-    $RolesAssigned = ""
-    Write-Progress -Activity "`nProcessed mailbox count: $MBUserCount`nCurrently Processing: $DisplayName"
-
-    if(-not $LastActionTime) {
-        $LastActionTime = "Never Logged In"
-        $InactiveDaysOfUser = "-"
-    } else {
-        $InactiveDaysOfUser = (New-TimeSpan -Start $LastActionTime).Days
-        if($FriendlyTime.IsPresent) {
-            $FriendlyLastActionTime = ConvertTo-HumanDate ($LastActionTime)
-            $LastActionTime = "$LastActionTime ($FriendlyLastActionTime)"
-        }
+# Check for EXO module installation
+$Module = Get-Module ExchangeOnlineManagement -ListAvailable
+if ($Module.count -eq 0) 
+{ 
+    Write-Host Exchange Online PowerShell module is not available  -ForegroundColor yellow  
+    $Confirm= Read-Host Are you sure you want to install module? [Y] Yes [N] No 
+    if ($Confirm -match "[yY]") 
+    { 
+        Write-host "Installing Exchange Online PowerShell module"
+        Install-Module ExchangeOnlineManagement -Repository PSGallery -AllowClobber -Force
+    } 
+    else 
+    { 
+        Write-Host EXO module is required to connect Exchange Online. Please install module using Install-Module ExchangeOnlineManagement cmdlet. 
+        Exit
     }
+} 
 
-    if($FriendlyTime.IsPresent -and $LastActionTimeUpdatedOn) {
-        $FriendlyLastActionTimeUpdatedOn = ConvertTo-HumanDate ($LastActionTimeUpdatedOn)
-        $LastActionTimeUpdatedOn = "$LastActionTimeUpdatedOn ($FriendlyLastActionTimeUpdatedOn)"
-    } elseif(-not $LastActionTimeUpdatedOn) {
-        $LastActionTimeUpdatedOn = "-"
-    }
-
-    $User = Get-MsolUser -UserPrincipalName $upn
-    $Licenses = $User.Licenses.AccountSkuId
-    $AssignedLicense = ""
-
-    if($Licenses.Count -eq 0) { 
-        $AssignedLicense = "No License Assigned" 
-    } else {
-        for($i=0; $i -lt $Licenses.Count; $i++) {
-            $LicenseItem = ($Licenses[$i] -split ":")[-1]
-            $NamePrint = $FriendlyNameHash[$LicenseItem] ? $FriendlyNameHash[$LicenseItem] : $LicenseItem
-            $AssignedLicense += $NamePrint
-            if($i -lt $Licenses.Count - 1) { $AssignedLicense += "," }
-        }
-    }
-
-    if($InactiveDaysOfUser -ne "-" -and $InactiveDays -and $InactiveDays -gt $InactiveDaysOfUser) { return }
-    if($UserMailboxOnly.IsPresent -and $MBType -ne "UserMailbox") { return }
-    if($ReturnNeverLoggedInMBOnly.IsPresent -and $LastActionTime -ne "Never Logged In") { return }
-    if($LicensedUserOnly.IsPresent -and $AssignedLicense -eq "No License Assigned") { return }
-
-    $Roles = (Get-MsolUserRole -UserPrincipalName $upn).Name
-    if($Roles.Count -eq 0) { 
-        $RolesAssigned = "No roles" 
-    } else {
-        $RolesAssigned = ($Roles -join ",")
-    }
-
-    $Result = @{
-        'UserPrincipalName'     = $upn
-        'DisplayName'           = $DisplayName
-        'LastUserActionTime'    = $LastActionTime
-        'LastActionTimeUpdatedOn' = $LastActionTimeUpdatedOn
-        'CreationTime'          = $CreationTime
-        'InactiveDays'          = $InactiveDaysOfUser
-        'MailboxType'           = $MBType
-        'AssignedLicenses'      = $AssignedLicense
-        'Roles'                 = $RolesAssigned
-    }
-
-    $Output = New-Object PSObject -Property $Result
-    $Output | Select-Object UserPrincipalName, DisplayName, LastUserActionTime, LastActionTimeUpdatedOn, InactiveDays, CreationTime, MailboxType, AssignedLicenses, Roles | Export-Csv -Path $ExportCSV -NoTypeInformation -Append
+Write-Host Connecting to Exchange Online...
+# Storing credential in script for scheduling purpose/ Passing credential as parameter - Authentication using non-MFA account
+if (($AdminName -ne "") -and ($Password -ne ""))
+{
+    $SecuredPassword = ConvertTo-SecureString -AsPlainText $Password -Force
+    $Credential  = New-Object System.Management.Automation.PSCredential $AdminName,$SecuredPassword
+    Connect-ExchangeOnline -Credential $Credential
+}
+elseif ($Organization -ne "" -and $ClientId -ne "" -and $CertificateThumbprint -ne "")
+{
+    Connect-ExchangeOnline -AppId $ClientId -CertificateThumbprint $CertificateThumbprint  -Organization $Organization -ShowBanner:$false
+}
+else
+{
+    Connect-ExchangeOnline
 }
 
-Function main {
-    if(-not (Get-Module ExchangeOnlineManagement -ListAvailable)) {
-        Write-Host "Exchange Online PowerShell V2 module not found" -ForegroundColor Yellow
-        $Confirm = Read-Host "Install module? [Y/N]"
-        if($Confirm -match "[yY]") {
-            Install-Module ExchangeOnlineManagement -Repository PSGallery -AllowClobber -Force
-            Import-Module ExchangeOnlineManagement
-        } else { Exit }
-    }
+$MaxStartDate = ((Get-Date).AddDays(-179)).Date
 
-    if(-not (Get-Module MsOnline -ListAvailable)) {
-        Write-Host "MSOnline module not found" -ForegroundColor Yellow
-        $Confirm = Read-Host "Install module? [Y/N]"
-        if($Confirm -match "[yY]") {
-            Install-Module MSOnline -Repository PSGallery -AllowClobber -Force
-            Import-Module MSOnline
-        } else { Exit }
-    }
-
-    if($NoMFA.IsPresent) {
-        if($UserName -and $Password) {
-            $SecuredPassword = ConvertTo-SecureString -AsPlainText $Password -Force
-            $Credential = New-Object System.Management.Automation.PSCredential $UserName, $SecuredPassword
-        } else {
-            $Credential = Get-Credential
-        }
-        Write-Host "Connecting Azure AD..."
-        Connect-MsolService -Credential $Credential | Out-Null
-        Write-Host "Connecting Exchange Online..."
-        Connect-ExchangeOnline -Credential $Credential
-    } else {
-        Write-Host "Connecting Exchange Online..."
-        Connect-ExchangeOnline
-        Write-Host "Connecting Azure AD..."
-        Connect-MsolService | Out-Null
-    }
-
-    if($FriendlyTime.IsPresent -and -not (Get-Module -Name PowerShellHumanizer -ListAvailable)) {
-        Write-Host "Installing PowerShellHumanizer for friendly date/time"
-        Install-Module PowerShellHumanizer
-    }
-
-    $MBUserCount = 0
-    $Output = @()
-    $FriendlyNameHash = Get-Content -Raw -Path .\LicenseFriendlyName.txt -ErrorAction Stop | ConvertFrom-StringData
-    $ExportCSV = ".\LastAccessTimeReport_$(Get-Date -Format 'yyyy-MMM-dd-ddd_hh-mm_tt').csv"
-
-    if($MBNamesFile) {
-        $Mailboxes = Import-Csv -Header "MBIdentity" $MBNamesFile
-        foreach($item in $Mailboxes) {
-            $MBDetails = Get-Mailbox -Identity $item.MBIdentity
-            $upn = $MBDetails.UserPrincipalName
-            $CreationTime = $MBDetails.WhenCreated
-            $DisplayName = $MBDetails.DisplayName
-            $MBType = $MBDetails.RecipientTypeDetails
-            $MBUserCount++
-            Get_LastLogonTime
-        }
-    } else {
-        Write-Progress -Activity "Getting Mailbox details from Office 365..." -Status "Please wait."
-        Get-Mailbox -ResultSize Unlimited | Where { $_.DisplayName -notlike "Discovery Search Mailbox" } | ForEach-Object {
-            $upn = $_.UserPrincipalName
-            $CreationTime = $_.WhenCreated
-            $DisplayName = $_.DisplayName
-            $MBType = $_.RecipientTypeDetails
-            $MBUserCount++
-            Get_LastLogonTime
-        }
-    }
-
-    Write-Host "`nScript executed successfully"
-    if(Test-Path $ExportCSV) {
-        Write-Host "`nDetailed report available at:" -NoNewline -ForegroundColor Yellow
-        Write-Host $ExportCSV
-        Write-Host "`n~~ Script prepared by Ryan Adams ~~" -ForegroundColor Green
-        Write-Host "~~ Check out " -NoNewline -ForegroundColor Green; Write-Host "https://www.governmentcontrol.net/" -ForegroundColor Yellow -NoNewline; Write-Host " for more tools and resources. ~~" -ForegroundColor Green
-        $Prompt = New-Object -ComObject wscript.shell
-        $UserInput = $Prompt.popup("Do you want to open output file?", 0, "Open Output File", 4)
-        if($UserInput -eq 6) { Invoke-Item $ExportCSV }
-    } else {
-        Write-Host "No mailbox found" -ForegroundColor Red
-    }
-
-    Get-PSSession | Remove-PSSession
+# Retrieve audit log for the past 180 days
+if (($StartDate -eq $null) -and ($EndDate -eq $null))
+{
+    $EndDate = (Get-Date).Date
+    $StartDate = $MaxStartDate
 }
 
-.main
+# Getting start date to audit export report
+while ($true)
+{
+    if ($StartDate -eq $null)
+    {
+        $StartDate = Read-Host "Enter start time for report generation '(Eg:12/15/2023)'"
+    }
+    try
+    {
+        $Date = [DateTime]$StartDate
+        if ($Date -ge $MaxStartDate)
+        { 
+            break
+        }
+        else
+        {
+            Write-Host "`nAudit can be retrieved only for the past 180 days. Please select a date after $MaxStartDate" -ForegroundColor Red
+            return
+        }
+    }
+    catch
+    {
+        Write-Host "`nNot a valid date" -ForegroundColor Red
+    }
+}
+
+# Getting end date to export audit report
+while ($true)
+{
+    if ($EndDate -eq $null)
+    {
+        $EndDate = Read-Host "Enter End time for report generation '(Eg: 12/15/2023)'"
+    }
+    try
+    {
+        $Date = [DateTime]$EndDate
+        if ($EndDate -lt ($StartDate))
+        {
+            Write-Host "End time should be later than start time" -ForegroundColor Red
+            return
+        }
+        break
+    }
+    catch
+    {
+        Write-Host "`nNot a valid date" -ForegroundColor Red
+    }
+}
+
+$Location = Get-Location
+$OutputCSV = "$Location\UserActivityReport_$((Get-Date -format yyyy-MMM-dd-ddd` hh-mm` tt).ToString()).csv" 
+$IntervalTimeInMinutes = 1440
+$CurrentStart = $StartDate
+$CurrentEnd = $CurrentStart.AddMinutes($IntervalTimeInMinutes)
+
+# Check whether CurrentEnd exceeds EndDate
+if ($CurrentEnd -gt $EndDate)
+{
+    $CurrentEnd = $EndDate
+}
+
+$AggregateResults = @()
+$CurrentResult = @()
+$CurrentResultCount = 0
+$AggregateResultCount = 0
+Write-Host "`nRetrieving user activity log from $StartDate to $EndDate..." -ForegroundColor Yellow
+$i = 0
+$ExportResult = ""   
+$ExportResults = @()  
+
+# Getting user name
+if ($UserID -eq "")
+{ 
+    $UserID = Read-Host "Enter user UPN '(eg:John@contoso.com)'"
+}
+
+while ($true)
+{ 
+    if ($CurrentStart -eq $CurrentEnd)
+    {
+        Write-Host "Start and end time are same. Please enter different time range" -ForegroundColor Red
+        Exit
+    }
+ 
+    # Getting audit log for given time range
+    $Results = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -UserIds $UserID -SessionId s -SessionCommand ReturnLargeSet -ResultSize 5000
+    $ResultCount = ($Results | Measure-Object).count
+    $AllAuditData = @()
+    foreach ($Result in $Results)
+    {
+        $i++
+        $MoreInfo = $Result.auditdata
+        $AuditData = $Result.auditdata | ConvertFrom-Json
+        $ActivityTime = Get-Date($AuditData.CreationTime) -format g
+        $UserID = $AuditData.userId
+        $Operation = $AuditData.Operation
+        $ResultStatus = $AuditData.ResultStatus
+        $Workload = $AuditData.Workload
+
+        # Export result to CSV
+        $ExportResult = @{
+            'Activity Time' = $ActivityTime
+            'User Name'     = $UserID
+            'Operation'     = $Operation
+            'Result'        = $ResultStatus
+            'Workload'      = $Workload
+            'More Info'     = $MoreInfo
+        }
+        $ExportResults = New-Object PSObject -Property $ExportResult  
+        $ExportResults | Select-Object 'Activity Time','User Name','Operation','Result','Workload','More Info' | Export-Csv -Path $OutputCSV -NoTypeInformation -Append 
+    }
+    Write-Progress -Activity "`n     Retrieving audit log from $StartDate to $EndDate.."`n" -Status "Processed audit record count: $i"
+    $CurrentResultCount += $ResultCount
+
+    if ($CurrentResultCount -eq 50000)
+    {
+        Write-Host "Retrieved max record for current range. Proceeding further may cause data loss or rerun the script with reduced time interval." -ForegroundColor Red
+        $Confirm = Read-Host "`nAre you sure you want to continue? [Y] Yes [N] No"
+        if ($Confirm -match "[Y]")
+        {
+            Write-Host "Aggregate count: $AggregateResultCount Current result: $CurrentResultCount"
+            $AggregateResultCount += $CurrentResultCount
+            Write-Host "Proceeding audit log collection with possible data loss"
+            [DateTime]$CurrentStart = $CurrentEnd
+            [DateTime]$CurrentEnd = $CurrentStart.AddMinutes($IntervalTimeInMinutes)
+            $CurrentResultCount = 0
+            $CurrentResult = @()
+            if ($CurrentEnd -gt $EndDate)
+            {
+                $CurrentEnd = $EndDate
+            }
+        }
+        else
+        {
+            Write-Host "Please rerun the script with reduced time interval" -ForegroundColor Red
+            Exit
+        }
+    }
+
+    if ($Results.count -lt 5000)
+    {
+        $AggregateResultCount += $CurrentResultCount
+        if ($CurrentEnd -eq $EndDate)
+        {
+            break
+        }
+        $CurrentStart = $CurrentEnd 
+        if ($CurrentStart -gt (Get-Date))
+        {
+            break
+        }
+        $CurrentEnd = $CurrentStart.AddMinutes($IntervalTimeInMinutes)
+        $CurrentResultCount = 0
+        $CurrentResult = @()
+        if ($CurrentEnd -gt $EndDate)
+        {
+            $CurrentEnd = $EndDate
+        }
+    }
+}
+
+Write-Host "`n~~ Script prepared by Ryan Adams ~~`n" -ForegroundColor Green
+Write-Host "~~ Check out " -NoNewline -ForegroundColor Green
+Write-Host "https://www.governmentcontrol.net/" -ForegroundColor Yellow -NoNewline
+Write-Host " for more resources and guides. ~~" -ForegroundColor Green `n`n
+
+if ($AggregateResultCount -eq 0)
+{
+    Write-Host "No records found"
+}
+else
+{
+    Write-Host "`nThe output file contains $AggregateResultCount audit records `n"
+    if (Test-Path -Path $OutputCSV) 
+    {
+        Write-Host " The Output file available in:" -NoNewline -ForegroundColor Yellow
+        Write-Host $OutputCSV 
+        $Prompt = New-Object -ComObject wscript.shell   
+        $UserInput = $Prompt.popup("Do you want to open output file?", 0, "Open Output File", 4)   
+        If ($UserInput -eq 6)   
+        {   
+            Invoke-Item "$OutputCSV"   
+        } 
+    }
+}
+
+# Disconnect Exchange Online session
+Disconnect-ExchangeOnline -Confirm:$false | Out-Null
