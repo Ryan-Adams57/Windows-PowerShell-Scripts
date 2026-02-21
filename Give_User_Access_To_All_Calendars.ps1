@@ -6,13 +6,13 @@ Import-PSSession $Session
 
 (If Import Session fails run Set-ExecutionPolicy RemoteSigned) and select 'y'
 
-$users =†Get-Mailbox | Select -ExpandProperty Alias
+$users =¬†Get-Mailbox | Select -ExpandProperty Alias
 
 Foreach ($user in $users) {Add-MailboxFolderPermission $user":\Calendar" -user usersemailaddress -accessrights Reviewer}
 
 LIST ALL CALENDARS WITH DEFAULT PERMISSIONS
 $allMailbox = Get-Mailbox -RecipientType UserMailbox
 
-$allMailbox | ForEach {Get-MailboxFolderPermission -Identity ì$($_.alias):\Calendarî | Select User,AccessRights}
+$allMailbox | ForEach {Get-MailboxFolderPermission -Identity ‚Äú$($_.alias):\Calendar‚Äù | Select User,AccessRights}
 
 Remove-PSSession $Session 
