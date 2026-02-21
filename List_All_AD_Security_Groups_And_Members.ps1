@@ -18,4 +18,5 @@ $Results | Export-Csv -Path c:\windows\temp\members.csv -NoTypeInformation
 -----------------------
 Export one particular group
 
+
 Get-ADGroupMember -identity GROUPNAME | select name | Export-csv -path C:\Windows\Temp\FILENAME.csv -NoTypeInformation
