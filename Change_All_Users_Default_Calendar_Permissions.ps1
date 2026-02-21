@@ -8,11 +8,11 @@ Import-PSSession $Session
 
 $all=Get-Mailbox -RecipientTypeDetails UserMailbox
 
-$all | ForEach {Set-MailboxFolderPermission -Identity ì$($_.alias):\Calendarî -User Default -AccessRights Reviewer}
+$all | ForEach {Set-MailboxFolderPermission -Identity ‚Äú$($_.alias):\Calendar‚Äù -User Default -AccessRights Reviewer}
 
 LIST ALL CALENDARS WITH DEFAULT PERMISSIONS
 $allMailbox = Get-Mailbox -RecipientType UserMailbox
 
-$allMailbox | ForEach {Get-MailboxFolderPermission -Identity ì$($_.alias):\Calendarî | Select User,AccessRights}
+$allMailbox | ForEach {Get-MailboxFolderPermission -Identity ‚Äú$($_.alias):\Calendar‚Äù | Select User,AccessRights}
 
 Remove-PSSession $Session 
