@@ -9,7 +9,7 @@ Import-PSSession $Session
 Get-MailboxFolderPermission -identity user@domain.co.uk:\Calendar
 (check the default permission of the calendar)
 
-Set-MailboxFolderPermission user@domain.co.uk:\calendar –User Default –AccessRights Reviewer (insert permission needed)
+Set-MailboxFolderPermission user@domain.co.uk:\calendar â€“User Default â€“AccessRights Reviewer (insert permission needed)
 
 Get-MailboxFolderPermission -identity user@domain.co.uk:\Calendar
 (run again to check that the default has changed)
