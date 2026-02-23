@@ -1,41 +1,103 @@
 # Introduction
 
-Welcome to this comprehensive repository of PowerShell solutions designed for the modern Microsoft 365 administrator.
+This repository contains practical PowerShell scripts for managing Microsoft 365.
 
-This collection features a robust set of scripts engineered to streamline environment management, automate complex reporting, and facilitate deep auditing.
+The scripts help administrators manage users, mailboxes, groups, calendars, and permissions across:
+
+Exchange Online
+
+SharePoint Online
+
+Microsoft Teams
+
+Microsoft Entra ID
+
+Each script is self-contained and built for real-world tenant operations.
+
+# What This Repository Covers
+
+User lifecycle
+
+Onboarding and offboarding automation
+
+Login and MFA tasks
+
+Mailbox management
+
+Access control
+
+Forwarding
+
+Send on behalf
+
+Mailbox type changes
+
+Statistics and exports
+
+Calendar management
+
+Permission changes
+
+Access audits
+
+Event removal
+
+Notifications
+
+Groups and distribution lists
+
+Membership reports
+
+Security group exports
+
+Group visibility
+
+Email address updates
+
+Connectivity and utilities
+
+Exchange Online connection scripts
+
+Maintenance and elevation tools
+
+All scripts follow consistent naming.
+Headers are clean.
+Formatting is standardized.
 
 # Key Features
 
-A versatile library of PowerShell scripts covering a wide array of administrative domains.
+Automates routine admin tasks
 
-Eliminate manual overhead by automating routine tasks, reducing human error, and increasing operational consistency.
+Reduces manual errors
 
-Generate granular, data-driven reports tailored for internal audits and regulatory compliance requirements.
+Supports CSV export for reporting
 
-Simplify the administration of users, groups, licenses, and security settings across the M365 stack.
+Works with Task Scheduler
 
-Monitor tenant activities to identify anomalous behavior, unauthorized access attempts, and configuration drift.
+Uses clear parameters and inline help
 
-All reporting scripts feature optimized CSV output for easy integration with Excel, Power BI, or other data analysis tools.
+Easy to modify
 
-Designed for headless execution; most scripts fully support Task Scheduler for periodic, hands-off reporting.
+# How to Use
 
-Well-structured code allowing for easy customization to meet specific organizational requirements.
+1. Set your execution policy if needed:
 
-# Usage Instructions
+Set-ExecutionPolicy RemoteSigned
 
-Each script is designed to be independent, containing all necessary logic and error handling within the file.
+2. Install required modules (Exchange Online, Graph, etc.).
 
-Utilize built-in parameters and switches to filter results and target specific workloads (e.g., Exchange Online, SharePoint, Teams).
+3. Connect with an account that has the right roles.
 
-Detailed comments, syntax guides, and usage examples are included at the top of every script.
+4. Test in a non-production tenant before running in production.
 
-Ensure your execution policy is configured correctly and you have the necessary Microsoft Graph or module-specific permissions before running.
+Each script includes parameters, examples, and error handling.
 
 # Disclaimer
 
-These scripts are provided "as is" without warranty of any kind. It is highly recommended to test all scripts in a non-production or sandbox environment before deploying them to your live Microsoft 365 tenant.
+These scripts are provided “as is.”
+Test before using them in production.
+You are responsible for reviewing and approving changes.
 
 # License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT License. See the LICENSE file for details.
