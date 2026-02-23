@@ -1,25 +1,4 @@
-<#
-=============================================================================================
-Name:           Automate Microsoft 365 User Onboarding Operations
-Version:        1.0
-Website:        https://www.governmentcontrol.net/
 
-~~~~~~~~~~~~~~~~~~
-Script Highlights:
-~~~~~~~~~~~~~~~~~~
-1. The script automates the onboarding process for Microsoft 365 users.
-2. Allows the addition of users into specific groups or roles.
-3. Sets initial license assignments for newly onboarded users.
-4. Configures specific attributes like department, title, etc., based on organization policies.
-5. Supports integration with Azure AD for user profile management.
-6. Supports bulk user creation from CSV files or direct input.
-7. Can trigger welcome email setup and other custom welcome processes.
-8. Compatible with MFA-enabled accounts for secure login.
-9. Includes error handling to ensure smooth execution and tracking of onboarding process.
-
-For detailed script execution: https://www.governmentcontrol.net/
-
-============================================================================================
 #>
 
 Param
@@ -151,3 +130,4 @@ foreach ($UserPrincipalName in $UserPrincipalNames) {
 }
 
 Write-Host "`nAll users have been onboarded successfully."
+
