@@ -1,9 +1,4 @@
-<# 
-=============================================================================================
-Name:           Install EXO V3 module and connects to Exchange Online PowerShell
-Version:        3.0
-Website:        https://www.governmentcontrol.net/
-=============================================================================================
+
 #>
 
 #Due RPS and Basic Auth retirement in Exchange Online, we need EXO V3 module
@@ -27,3 +22,4 @@ if($Module.count -eq 0)
  
 Write-Host Connecting to Exchange Online...
 Connect-ExchangeOnline
+
