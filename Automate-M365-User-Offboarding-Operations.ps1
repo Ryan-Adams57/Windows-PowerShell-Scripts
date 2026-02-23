@@ -1,21 +1,4 @@
-<#
-=============================================================================================
-Name:           Automate Microsoft 365 User Offboarding with PowerShell
-Description:    This script can perform 14 Microsoft 365 offboarding activities.
-Version:        2.0
-Script by:      Ryan Adams
-Website:        https://www.governmentcontrol.net/
-GitHub:         https://github.com/Ryan-Adams57
-GitLab:         https://gitlab.com/Ryan-Adams57
-PasteBin:       https://pastebin.com/u/Removed_Content
 
-Change Log
-~~~~~~~~~~
-
-    V1.0 (Oct 14, 2023) - File created
-    V2.0 (Apr 02, 2025) - Removed beta version cmdlets 
-
-=========================================================================================
 #>
 param(
     [string]$TenantId,
@@ -480,3 +463,4 @@ Function main
     # Continue with existing actions
 }
 . main
+
