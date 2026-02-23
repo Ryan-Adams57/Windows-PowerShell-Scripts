@@ -1,103 +1,56 @@
-# Introduction
+# Windows-PowerShell-Scripts
 
-This repository contains practical PowerShell scripts for managing Microsoft 365.
+A collection of PowerShell scripts designed to automate and simplify administration tasks in Microsoft 365 and Exchange Online environments.
 
-The scripts help administrators manage users, mailboxes, groups, calendars, and permissions across:
+This repository focuses on user lifecycle management, mailbox administration, calendar permissions, group management, reporting, and system maintenance.
 
-Exchange Online
+# Overview
 
-SharePoint Online
+Managing Microsoft 365 through the admin portal can be time-consuming. These scripts provide reusable, standardized tools to help administrators:
 
-Microsoft Teams
+Automate user onboarding and offboarding
 
-Microsoft Entra ID
+Manage mailbox permissions and access
 
-Each script is self-contained and built for real-world tenant operations.
+Control calendar permissions
 
-# What This Repository Covers
+Configure email forwarding
 
-User lifecycle
+Export mailbox and group data
 
-Onboarding and offboarding automation
+Manage distribution lists and Microsoft 365 Groups
 
-Login and MFA tasks
+Perform system-wide maintenance tasks
 
-Mailbox management
+All scripts follow consistent naming conventions for clarity and maintainability.
 
-Access control
+# Requirements
 
-Forwarding
+Windows PowerShell 5.1+ or PowerShell 7+
 
-Send on behalf
+Microsoft 365 administrative permissions
 
-Mailbox type changes
+Exchange Online Management Module (EXO V3 recommended)
 
-Statistics and exports
+Azure AD / Entra ID connectivity where required
 
-Calendar management
+# Connecting to Exchange Online
 
-Permission changes
+Most scripts require an active Exchange Online session:
 
-Access audits
+Install-Module ExchangeOnlineManagement
+Connect-ExchangeOnline
 
-Event removal
+Or run:
 
-Notifications
+.\Install-Connect-EXO-V3.ps1
 
-Groups and distribution lists
+# Usage Example
 
-Membership reports
+.\Add_Calendar_Permissions.ps1
 
-Security group exports
-
-Group visibility
-
-Email address updates
-
-Connectivity and utilities
-
-Exchange Online connection scripts
-
-Maintenance and elevation tools
-
-All scripts follow consistent naming.
-Headers are clean.
-Formatting is standardized.
-
-# Key Features
-
-Automates routine admin tasks
-
-Reduces manual errors
-
-Supports CSV export for reporting
-
-Works with Task Scheduler
-
-Uses clear parameters and inline help
-
-Easy to modify
-
-# How to Use
-
-1. Set your execution policy if needed:
-
-Set-ExecutionPolicy RemoteSigned
-
-2. Install required modules (Exchange Online, Graph, etc.).
-
-3. Connect with an account that has the right roles.
-
-4. Test in a non-production tenant before running in production.
-
-Each script includes parameters, examples, and error handling.
-
-# Disclaimer
-
-These scripts are provided “as is.”
-Test before using them in production.
-You are responsible for reviewing and approving changes.
+Each script runs independently and may prompt for required input.License
 
 # License
 
-MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. See the MIT LICENSE file for details.
