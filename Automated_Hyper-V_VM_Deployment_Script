@@ -1,163 +1,79 @@
-<#
-.SYNOPSIS
-Automated Hyper-V VM Deployment Script (Windows Server 2019 Hyper-V Core)
+Enter-PSSession -ComputerName 'hv.local' -Credential (Get-Credential -UserName "Administrator" -Message "Type password") -Verbose -ErrorAction Stop -Authentication Credssp
 
-.DESCRIPTION
-This script creates and deploys a new Generation 2 virtual machine using a 4-step workflow:
-    1. Create a new VHDX file
-    2. Deploy the VM and attach storage
-    3. Mount an ISO file via DVD drive
-    4. Start the VM
+function create-vm {
+    param (
+        [string]$vm_name
+    )
+    $server_type = Read-Host "Put server service type"
+    $server_ip = Read-host "Put indicated IP Address"
+    $server_os = Read-Host "Specify Server OS - WIN or LIN"
+    $server_windows = "WIN"
+    $server_linux = "LIN"
+#-----------------------------------------------------------------------------------
+    if ($server_os -eq $server_windows) {
+        $vm_name = "MAOX-$Server_windows-$server_type-$server_ip"
+        New-VHD -Path "C:\Virtual Machines\Windows\$($vm_name)\$($vm_name).vhdx" `
+            -Fixed `
+            -SizeBytes 40GB `
+            -ErrorAction Stop `
+            -Verbose `
+            -Confirm:$false
+    }
+    elseif ($server_os -eq $server_linux) {
+        $vm_name = "MAOX-$Server_linux-$server_type-$server_ip"
+        New-VHD -Path "C:\Virtual Machines\Linux\$($vm_name)\$($vm_name).vhdx" `
+            -Fixed `
+            -SizeBytes 40GB `
+            -ErrorAction Stop `
+            -Verbose `
+            -Confirm:$false
+    }    
+    else {
+        Write-Host "It is mandotory to define OS WIN or LIN"
+    }
+#-----------------------------------------------------------------------------------
+    if ($server_os -eq $server_windows) {
+        $vm_name = "MAOX-$Server_windows-$server_type-$server_ip"
+        New-VM -Name $vm_name `
+            -MemoryStartupBytes 2GB `
+            -VHDPath "C:\Virtual Machines\Windows\$($vm_name)\$($vm_name).vhdx" `
+            -SwitchName 'InternalSwitch1' `
+            -Path "C:\Virtual Machines\Windows\$($vm_name)" `
+            -Generation 1 `
+            -Confirm:$false `
+            -BootDevice CD `
+            -Verbose
+    }
+    elseif ($server_os -eq $server_linux) {
+        $vm_name = "MAOX-$Server_linux-$server_type-$server_ip"
+        New-VM -Name $vm_name `
+            -MemoryStartupBytes 2GB `
+            -VHDPath "C:\Virtual Machines\Linux\$($vm_name)\$($vm_name).vhdx" `
+            -SwitchName 'InternalSwitch1' `
+            -Path "C:\Virtual Machines\Linux\$($vm_name)" `
+            -Generation 1 `
+            -Confirm:$false `
+            -BootDevice CD `
+            -Verbose
+    }
+    else {
+        Write-Host-Host "It is mandotory to define OS WIN or LIN"
+    }
+#-----------------------------------------------------------------------------------    
+    Add-VMDvdDrive -VMName $vm_name -Path "C:\ISO\Windows Server 2022.iso" -Confirm:$false -Verbose
 
-.PREREQUISITES
-- Run this script in an elevated PowerShell session (Run as Administrator).
-- Hyper-V role must be installed.
-- A Virtual Switch must already exist (verify using: Get-VMSwitch).
-- ISO file path must be valid and accessible.
-- Ensure sufficient disk space for the VHDX.
-
-.NOTES
-Designed for Windows Server 2019 Hyper-V Core (no GUI required).
-#>
-
-# ================================
-# ====== CONFIGURATION ===========
-# ================================
-
-# ---- Change these values as needed ----
-$VMName        = "TestVM01"
-$VHDXPath      = "D:\Hyper-V\Virtual Hard Disks\TestVM01.vhdx"
-$VHDXSize      = 40GB
-$MemoryStartup = 2GB
-$ISOPath       = "D:\ISO\WindowsServer2019.iso"
-$VMSwitchName  = "External Switch"
-# ---------------------------------------
-
-
-# ================================
-# ====== PRE-CHECKS ==============
-# ================================
-
-Write-Host "Starting VM deployment process..." -ForegroundColor Cyan
-
-# Ensure running as Administrator
-if (-not ([Security.Principal.WindowsPrincipal] `
-    [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
-    [Security.Principal.WindowsBuiltinRole]::Administrator)) {
-    Write-Error "This script must be run as Administrator."
-    exit 1
+    return Start-VM $vm_name
 }
 
-# Check if VM already exists
-if (Get-VM -Name $VMName -ErrorAction SilentlyContinue) {
-    Write-Error "A VM named '$VMName' already exists. Aborting."
-    exit 1
+$yes = "yes"
+$no  = "no"
+$vm_power = Read-Host "Type yes or no"
+if ($vm_power -eq $yes) {
+    create-vm
 }
-
-# Check if VHDX already exists
-if (Test-Path $VHDXPath) {
-    Write-Error "VHDX file already exists at '$VHDXPath'. Aborting."
-    exit 1
+elseif ($vm_power -eq $no) {
+    Write-Host "Cant create VMs"
 }
-
-# Check if ISO exists
-if (-not (Test-Path $ISOPath)) {
-    Write-Error "ISO file not found at '$ISOPath'. Aborting."
-    exit 1
+else {
+    Write-Host "You put no condtions, MF ! :)"
 }
-
-# Check if Virtual Switch exists
-if (-not (Get-VMSwitch -Name $VMSwitchName -ErrorAction SilentlyContinue)) {
-    Write-Error "Virtual Switch '$VMSwitchName' does not exist. Aborting."
-    exit 1
-}
-
-# Ensure directory for VHDX exists
-$VHDDirectory = Split-Path $VHDXPath
-if (-not (Test-Path $VHDDirectory)) {
-    New-Item -ItemType Directory -Path $VHDDirectory -Force | Out-Null
-}
-
-
-# ================================
-# ====== STEP 1 ==================
-# Create Virtual Hard Disk (.vhdx)
-# ================================
-
-Write-Host "Step 1: Creating VHDX..." -ForegroundColor Yellow
-
-$VHDParams = @{
-    Path = $VHDXPath
-    SizeBytes = $VHDXSize
-    Dynamic = $true
-}
-
-try {
-    New-VHD @VHDParams -ErrorAction Stop | Out-Null
-    Write-Host "VHDX created successfully."
-}
-catch {
-    Write-Error "Failed to create VHDX. $_"
-    exit 1
-}
-
-
-# ================================
-# ====== STEP 2 ==================
-# Deploy VM and Attach Storage
-# ================================
-
-Write-Host "Step 2: Creating Virtual Machine..." -ForegroundColor Yellow
-
-$VMParams = @{
-    Name               = $VMName
-    MemoryStartupBytes = $MemoryStartup
-    Generation         = 2
-    VHDPath            = $VHDXPath
-    SwitchName         = $VMSwitchName
-}
-
-try {
-    New-VM @VMParams -ErrorAction Stop | Out-Null
-    Write-Host "VM created successfully."
-}
-catch {
-    Write-Error "Failed to create VM. $_"
-    exit 1
-}
-
-
-# ================================
-# ====== STEP 3 ==================
-# Mount ISO via DVD Drive
-# ================================
-
-Write-Host "Step 3: Attaching ISO to DVD drive..." -ForegroundColor Yellow
-
-try {
-    Add-VMDvdDrive -VMName $VMName -Path $ISOPath -ErrorAction Stop
-    Write-Host "ISO attached successfully."
-}
-catch {
-    Write-Error "Failed to attach ISO. $_"
-    exit 1
-}
-
-
-# ================================
-# ====== STEP 4 ==================
-# Start the Virtual Machine
-# ================================
-
-Write-Host "Step 4: Starting Virtual Machine..." -ForegroundColor Yellow
-
-try {
-    Start-VM -Name $VMName -ErrorAction Stop | Out-Null
-    Write-Host "VM '$VMName' started successfully." -ForegroundColor Green
-}
-catch {
-    Write-Error "Failed to start VM. $_"
-    exit 1
-}
-
-Write-Host "Deployment completed successfully." -ForegroundColor Cyan
