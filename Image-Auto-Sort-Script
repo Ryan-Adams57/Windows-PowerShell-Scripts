@@ -1,0 +1,41 @@
+# ==========================================
+# Image Auto-Sort Script (Monthly Cleanup)
+# ==========================================
+
+# 1️⃣ Path to folder containing images
+# IMPORTANT: Update this path to your actual folder
+$sourcePath = "C:\Users\PKUser\Pictures\Screenshots"
+
+# Check if source folder exists
+if (-not (Test-Path $sourcePath)) {
+    Write-Host "Source folder not found: $sourcePath" -ForegroundColor Red
+    exit 1
+}
+
+# Get image files (common formats)
+$files = Get-ChildItem -Path $sourcePath -File | Where-Object {
+    $_.Extension -match "\.(jpg|jpeg|png|heic|webp)$"
+}
+
+foreach ($file in $files) {
+
+    # 2️⃣ Get month & year from CreationTime
+    $month = $file.CreationTime.ToString("MM")
+    $year  = $file.CreationTime.Year
+    $folderName = "$month$year"   # Example: 072025
+
+    # 3️⃣ Full destination path
+    $destinationFolder = Join-Path $sourcePath $folderName
+
+    # Create folder if it does not exist
+    if (-not (Test-Path $destinationFolder)) {
+        New-Item -Path $destinationFolder -ItemType Directory | Out-Null
+    }
+
+    # 4️⃣ Move file
+    Move-Item -Path $file.FullName -Destination $destinationFolder -Force
+
+    Write-Host "Moved: $($file.Name) -> $folderName" -ForegroundColor Cyan
+}
+
+Write-Host "Images have been sorted by month successfully." -ForegroundColor Green
