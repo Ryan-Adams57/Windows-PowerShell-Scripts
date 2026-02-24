@@ -1,56 +1,46 @@
-# Windows-PowerShell-Scripts
+# Windows PowerShell Scripts
 
-A collection of PowerShell scripts designed to automate and simplify administration tasks in Microsoft 365 and Exchange Online environments.
+A collection of PowerShell scripts to automate Microsoft 365, Exchange Online, Active Directory, and Windows system administration tasks.
 
-This repository focuses on user lifecycle management, mailbox administration, calendar permissions, group management, reporting, and system maintenance.
+## Requirements
 
-# Overview
+- Windows PowerShell 5.1+ or PowerShell 7+
+- Microsoft 365 admin permissions
+- Exchange Online Management Module (EXO V3)
+- RSAT tools for AD-related scripts
 
-Managing Microsoft 365 through the admin portal can be time-consuming. These scripts provide reusable, standardized tools to help administrators:
+## Connecting to Exchange Online
 
-Automate user onboarding and offboarding
-
-Manage mailbox permissions and access
-
-Control calendar permissions
-
-Configure email forwarding
-
-Export mailbox and group data
-
-Manage distribution lists and Microsoft 365 Groups
-
-Perform system-wide maintenance tasks
-
-All scripts follow consistent naming conventions for clarity and maintainability.
-
-# Requirements
-
-Windows PowerShell 5.1+ or PowerShell 7+
-
-Microsoft 365 administrative permissions
-
-Exchange Online Management Module (EXO V3 recommended)
-
-Azure AD / Entra ID connectivity where required
-
-# Connecting to Exchange Online
-
-Most scripts require an active Exchange Online session:
-
+```powershell
 Install-Module ExchangeOnlineManagement
 Connect-ExchangeOnline
+```
 
-Or run:
+Or run `.\Install-Connect-EXO-V3.ps1`
 
-.\Install-Connect-EXO-V3.ps1
+## Categories
 
-# Usage Example
+- **M365 & Exchange** — Onboarding, offboarding, mailbox management, permissions, forwarding
+- **Calendar** — Add, change, and audit calendar permissions organization-wide
+- **Distribution Lists & Groups** — List and export DL, O365, and AD security group members
+- **Active Directory** — User logon reports, account expiration, computer management
+- **System Administration** — Software inventory, OS info, Windows keys, maintenance
+- **Network & Security** — IP config, BitLocker, certificates, audit reports
+- **Imaging & Deployment** — DISM, drivers, printers, Office 365, dental software
+- **File Management** — Sort files and images by type or date
 
-.\Add_Calendar_Permissions.ps1
+## Usage
 
-Each script runs independently and may prompt for required input.License
+Each script runs independently and may prompt for input. Run from an elevated PowerShell session:
 
-# License
+```powershell
+.\ScriptName.ps1
+```
 
-This project is licensed under the MIT License. See the MIT LICENSE file for details.
+## License
+
+Licensed under the MIT License. See [MIT LICENSE](MIT%20LICENSE) for details.
+
+# Disclaimer
+
+Each script is provided as-is. Although these scripts have been tested in a production environment with working results, it is highly recommended to test them in your own environment at your own risk before deploying.
