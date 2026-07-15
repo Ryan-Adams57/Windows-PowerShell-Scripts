@@ -20,14 +20,14 @@ Or run `.\Install-Connect-EXO-V3.ps1`
 
 ## Categories
 
-- **M365 & Exchange** — Onboarding, offboarding, mailbox management, permissions, forwarding
-- **Calendar** — Add, change, and audit calendar permissions organization-wide
-- **Distribution Lists & Groups** — List and export DL, O365, and AD security group members
-- **Active Directory** — User logon reports, account expiration, computer management
-- **System Administration** — Software inventory, OS info, Windows keys, maintenance
-- **Network & Security** — IP config, BitLocker, certificates, audit reports
-- **Imaging & Deployment** — DISM, drivers, printers, Office 365, dental software
-- **File Management** — Sort files and images by type or date
+- **M365 & Exchange** - Onboarding, offboarding, mailbox management, permissions, forwarding
+- **Calendar** - Add, change, and audit calendar permissions organization-wide
+- **Distribution Lists & Groups** - List and export DL, O365, and AD security group members
+- **Active Directory** - User logon reports, account expiration, computer management
+- **System Administration** - Software inventory, OS info, Windows keys, maintenance
+- **Network & Security** - IP config, BitLocker, certificates, audit reports
+- **Imaging & Deployment** - DISM, drivers, printers, Office 365, dental software
+- **File Management** - Sort files and images by type or date
 
 ## Usage
 
