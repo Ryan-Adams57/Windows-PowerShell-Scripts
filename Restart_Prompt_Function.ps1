@@ -2,8 +2,8 @@ Add-Type -AssemblyName Microsoft.VisualBasic
 
 function Restart-Prompt {
     $response = [Microsoft.VisualBasic.Interaction]::MsgBox(
-        "IT is rebooting your machine. Save your work. Cancel to abort.", 
-        [Microsoft.VisualBasic.MsgBoxStyle]::OkCancel + [Microsoft.VisualBasic.MsgBoxStyle]::Information, 
+        "IT is rebooting your machine. Save your work. Cancel to abort.",
+        [Microsoft.VisualBasic.MsgBoxStyle]::OkCancel + [Microsoft.VisualBasic.MsgBoxStyle]::Information,
         "IT"
     )
 
