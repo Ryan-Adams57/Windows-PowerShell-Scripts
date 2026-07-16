@@ -42,7 +42,7 @@ Get-WinEvent -FilterHashtable @{
         $_.Properties[5].Value -ne "SYSTEM"
     } |
     Select-Object `
-        TimeCreated, 
+        TimeCreated,
         @{Name="EventType";Expression={
             switch ($_.Id) {
                 4624 { "Logon" }
