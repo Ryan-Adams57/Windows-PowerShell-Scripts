@@ -3,8 +3,8 @@
 Prepare Windows PC for BIOS AHCI/Secure Boot changes before installing Linux.
 
 .DESCRIPTION
-This script automates the Windows-side configuration required to safely enable AHCI 
-drivers and boot into Safe Mode, minimizing boot failures when changing BIOS settings. 
+This script automates the Windows-side configuration required to safely enable AHCI
+drivers and boot into Safe Mode, minimizing boot failures when changing BIOS settings.
 It does NOT modify BIOS directly. Manual BIOS steps are still required.
 
 .PREREQUISITES
