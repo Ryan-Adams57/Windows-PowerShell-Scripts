@@ -1,8 +1,8 @@
 # ---------- SERVER LIST ----------
 $servers = @(
-    @{Server=""; Database=""; User=""; Password=""}, 
+    @{Server=""; Database=""; User=""; Password=""},
 	@{Server=""; Database=""; User=""; Password=""}
-	
+
 )
 
 # ---------- OUTPUT FILE ----------
@@ -13,9 +13,9 @@ $allResults = @()
 
 # ---------- QUERY ----------
 $query = "
-SELECT ErrorMessage, ErrorProcedure, ErrorTime 
-FROM ErrorLog 
-WHERE ErrorTime >= DATEADD(DAY, 1, EOMONTH(GETDATE(), -1))  
+SELECT ErrorMessage, ErrorProcedure, ErrorTime
+FROM ErrorLog
+WHERE ErrorTime >= DATEADD(DAY, 1, EOMONTH(GETDATE(), -1))
 ORDER BY ErrorTime
 "
 
