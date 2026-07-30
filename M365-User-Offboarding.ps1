@@ -105,7 +105,7 @@ Function ResetPasswordToRandom
 {
     $Password = -join ((48..57) + (65..90) + (97..122) | ForEach-Object { [char]$_ } | Get-Random -Count 8)
     $log = "$UPN - $Password"
-    $Pwd = ConvertTo-SecureString $Password -AsPlainText –Force
+    $Pwd = ConvertTo-SecureString $Password -AsPlainText -Force
     try{
         $Passwordprofile = @{
 		    forceChangePasswordNextSignIn = $true
