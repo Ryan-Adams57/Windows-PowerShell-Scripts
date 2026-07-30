@@ -5,9 +5,9 @@ cd "C:\Get-Account-Expiration-Report.ps1"
 Remove-Item -Force AD_Expire_date.csv -Confirm:$false -Recurse
 
 #Generating AD Expiration File
-#Get-ADUser -Identity wellington.cesar.adm –Properties Name,SamAccountName,GivenName,EmailAddress,AccountExpirationDate | Select-Object Name,SamAccountName,GivenName,EmailAddress,@{Name="ExpiryDate";Expression={$_.AccountExpirationDate}} | Export-Csv AD_Expire_date.csv -NoTypeInformation -Encoding UTF8
-Get-ADUser -filter {Enabled -eq $True} –Properties Name,SamAccountName,GivenName,EmailAddress,AccountExpirationDate -Server wegdadc17 | Where-Object{$_.AccountExpirationDate -ne $null} | Select-Object Name,SamAccountName,GivenName,EmailAddress,@{Name="ExpiryDate";Expression={$_.AccountExpirationDate}} | Export-Csv AD_Expire_date.csv -NoTypeInformation -Encoding UTF8
-#Get-ADUser -filter {Enabled -eq $True} –Properties Name,SamAccountName,GivenName,EmailAddress,AccountExpirationDate -Server wegdadc17  | Select-Object Name,SamAccountName,GivenName,EmailAddress,@{Name="ExpiryDate";Expression={$_.AccountExpirationDate}} | Export-Csv WE_AD_Expire_date.csv -NoTypeInformation -Encoding UTF8
+#Get-ADUser -Identity wellington.cesar.adm -Properties Name,SamAccountName,GivenName,EmailAddress,AccountExpirationDate | Select-Object Name,SamAccountName,GivenName,EmailAddress,@{Name="ExpiryDate";Expression={$_.AccountExpirationDate}} | Export-Csv AD_Expire_date.csv -NoTypeInformation -Encoding UTF8
+Get-ADUser -filter {Enabled -eq $True} -Properties Name,SamAccountName,GivenName,EmailAddress,AccountExpirationDate -Server wegdadc17 | Where-Object{$_.AccountExpirationDate -ne $null} | Select-Object Name,SamAccountName,GivenName,EmailAddress,@{Name="ExpiryDate";Expression={$_.AccountExpirationDate}} | Export-Csv AD_Expire_date.csv -NoTypeInformation -Encoding UTF8
+#Get-ADUser -filter {Enabled -eq $True} -Properties Name,SamAccountName,GivenName,EmailAddress,AccountExpirationDate -Server wegdadc17  | Select-Object Name,SamAccountName,GivenName,EmailAddress,@{Name="ExpiryDate";Expression={$_.AccountExpirationDate}} | Export-Csv WE_AD_Expire_date.csv -NoTypeInformation -Encoding UTF8
 
 #Import CSV AD Expiration File
 $path     = Split-Path -parent $MyInvocation.MyCommand.Definition
